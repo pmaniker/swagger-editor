@@ -1,0 +1,81 @@
+{
+	"podProtection": {
+		"enabled": false,
+		"monitoringInterval": 100,
+		"congestionControl": {
+			"enabled": false,
+			"stateChangeSampleCount": 10,
+			"actionSamplingPeriod": 3,
+			"states": [{
+					"name": "Normal",
+					"weight": 0,
+					"entryAction": [{
+							"action": "MaxConcurrentStreamsUpdate",
+							"arguments": {
+								"incrementBy": 30,
+								"incrementByActionSamplingPeriod": 3,
+								"maxConcurrentStreamsPerCon": 100
+							}
+						},
+						{
+							"action": "AcceptIncomingConnections",
+							"arguments": {
+								"accept": true
+							}
+						}
+					]
+				},
+				{
+					"name": "DoC",
+					"weight": 1,
+					"resourceThreshold": {
+						"cpu": 60,
+						"memory": 60,
+						"pendingMessage": 5000
+					},
+					"entryAction": [{
+							"action": "AcceptIncomingConnections",
+							"arguments": {
+								"accept": false
+							}
+						},
+						{
+							"action": "MaxConcurrentStreamsUpdate",
+							"arguments": {
+								"incrementBy": 30,
+								"incrementByActionSamplingPeriod": 3,
+								"decrementBy": 30,
+								"decrementByActionSamplingPeriod": 1,
+								"maxConcurrentStreamsPerCon": 50
+							}
+						}
+					]
+				},
+				{
+					"name": "Congested",
+					"weight": 2,
+					"resourceThreshold": {
+						"cpu": 75,
+						"memory": 75,
+						"pendingMessage": 7000
+					},
+					"entryAction": [{
+							"action": "AcceptIncomingConnections",
+							"arguments": {
+								"accept": false
+							}
+						},
+						{
+							"action": "MaxConcurrentStreamsUpdate",
+							"arguments": {
+								"decrementBy": 30,
+								"decrementByActionSamplingPeriod": 1,
+								"maxConcurrentStreamsPerCon": 10
+							}
+						}
+					]
+				}
+			]
+		}
+	}
+}
